@@ -120,9 +120,9 @@ figures. Until you've completed all the parts, you may safely leave these
 captions blank.
 
 ```{r code block to create descriptive captions}
-caption_4 <- 'Descriptive Caption for part 4 here'
-caption_5 <- 'Descriptive Caption for part 5 here'
-caption_8 <- 'Descriptive Caption for part 8 here'
+caption_4 <- 'Scree plot of principal component analysis variance explained. Bar heights indicate the percentage of total variance explained by each principal component (PC), and the overlaid line represents the cumulative variance explained across components. Analysis was performed using prcomp() in R.'
+caption_5 <- 'Principal component analysis (PCA) biplot of PC1 and PC2. Each point represents a sample, colored by colorectal cancer subtype classification. Axis labels indicate the percentage of total variance explained by each component. Analysis was performed using prcomp() in R.'
+caption_8 <- 'Heatmap of row-scaled differential probe intensities. Red cells indicate higher intensity relative to the probe mean (positive z-score), while blue cells indicate lower intensity (negative z-score). Rows represent probes and columns represent samples.'
 ```
 
 ## 4. Plot the variance explained and cumulative variance for the PCs
@@ -141,7 +141,21 @@ numeric ordering.
 
 ```{r code block to plot variance explained and cumulative variance explained, fig.cap = caption_4}
 #Create a ggplot2 with the plot described above, refer to the reference report
-
+ls_cols <- c('Cumulative'='black')
+bar_cols <-c('Variance Explained'='light blue')
+  variance_tibble %>%
+        mutate(principal_component = factor(principal_component, 
+                                         levels = unique(principal_component[order(as.numeric(gsub("PC", "", principal_component)))]))) %>%
+    ggplot() + 
+    geom_bar(aes(x=principal_component, y=variance_explained, fill='Variance Explained'), stat='identity', color='black') + 
+    geom_line(aes(x=principal_component, y=cumulative, group=1, color='Cumulative')) +
+    geom_point(aes(x=principal_component, y=cumulative, group=1, color='Cumulative')) +
+    scale_colour_manual(name="Cumulative",values=ls_cols) +
+    scale_fill_manual(name="Variance Explained",values=bar_cols) +
+    labs(x='PC', y='% variance') +
+    theme_classic(base_size=8) + 
+    theme(axis.text.x=element_text(angle=90,hjust=1))
+             
 ```
 
 
